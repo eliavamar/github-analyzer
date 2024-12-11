@@ -56,16 +56,16 @@ class GithubTools:
         @tool
         def query_with_diff(query_text: str, limit: int = 10):
             """
-            Analyze issues related to code versions by retrieving the GitHub diff between the two latest tags of a
-            given repository(collection_name it's the current repo, and we already have it).
-
-            This tool helps identify changes that may have introduced bugs or issues, such as run time, unit test
-            and run time failures by comparing the latest code versions. If no relevant changes are found,
-            the tool will indicate that no issues could be identified.
+            Retrieves the differences between the two most recent versions of a GitHub repository,
+            based on a given query. The repository name corresponds to the 'collection_name' already available.
 
             Args:
-                query_text (str): The repository to analyze.
-                limit (int): The number of results to return.
+                query_text (str): The query to search for related documentation.
+                limit (int): The number of most relevant code documentation entries to return (default is 10).
+
+            Returns:
+                list: A list of code documentation entries related to the query and the differences between
+                      the latest versions of the repository.
             """
             return self._query_vector_db(case_value="diff", query_text=query_text, limit=limit)
 
