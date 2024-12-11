@@ -6,8 +6,10 @@ from DB.db_types import DBType
 from DB.settings import VectorDBSettings
 from DB.utils import add_github_repo_to_db
 from DB.vector_db import VectorDB
+from agents.github.GithubAgent import GithubAgent
 from scanners.github.github_scanner import GitHubScanner
 from scanners.github.github_settings import GitHubSettings
+from tools.github.GithubTools import GithubTools
 
 app = Flask(__name__)
 
@@ -15,10 +17,17 @@ app = Flask(__name__)
 # API endpoint 1: Query endpoint
 @app.route('/query', methods=['GET'])
 def query():
-    query_param = request.args.get('query')
-    if not query_param:
-        return jsonify({"error": "Missing required query parameter 'query'."}), 400
-    return jsonify({"message": f"You searched for: {query_param}"})
+    settings = VectorDBSettings(db_type=DBType.QDRANT,
+                                url="https://bac12217-a8c1-42c2-96a2-d60825ac7f4d.us-west-2-0.aws.cloud.qdrant.io:6333",
+                                api_key="p6ErOJYvqi-daabdLArES-QeBxAxfGYzE46i40ML1hx-5unp7DUFUA")
+    vector_db = VectorDB(settings)
+    client = vector_db.get_client()
+    collection_name = "https___github_wdf_sap_corp_api_v3_devx-wing_ucl-provider"
+    llm = init_llm('gpt-4o')
+    agent_executor = GithubAgent(client, collection_name, llm).get_agent()
+    result = agent_executor.invoke(
+        {"input": "I have bug in the unit testing in uclTest.file, Do you know what the problem can be?"})
+    return result
 
 
 # API endpoint 2: GitHub info endpoint
