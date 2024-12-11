@@ -33,7 +33,7 @@ class GitHubScanner:
         raise Exception("The repo not exist")
 
     def get_repo_auth_url(self):
-        auth_url = self.repo_metadata.clone_url.replace("https://", f"https://{self.username}:{self.auth.token}@")
+        auth_url = self.repo_metadata.clone_url.replace("https://", f"https://{self.github_settings.username}:{self.auth.token}@")
         return auth_url
 
     def clone_repo(self, branch="main", clone_path=None):
