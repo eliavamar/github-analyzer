@@ -8,3 +8,4 @@ ai-core-sdk
 langgraph
 langchain~=0.3.10
 github~=1.2.7
+flask
