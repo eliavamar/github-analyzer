@@ -1,0 +1,7 @@
+qdrant-client
+fastembed
+gitpython
+PyGithub
+langchain-community
+generative-ai-hub-sdk[all]
+ai-core-sdk
