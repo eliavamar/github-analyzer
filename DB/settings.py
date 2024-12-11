@@ -1,6 +1,6 @@
 from typing import Optional
 from dataclasses import dataclass
-from db_types import DBType
+from DB.db_types import DBType
 
 
 @dataclass

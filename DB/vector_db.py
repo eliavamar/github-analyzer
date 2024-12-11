@@ -1,9 +1,6 @@
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import MatchValue
-from qdrant_client.models import Filter, FieldCondition, Match
-
-from db_types import DBType
-from settings import VectorDBSettings
+from DB.db_types import DBType
+from DB.settings import VectorDBSettings
 
 
 class VectorDB:

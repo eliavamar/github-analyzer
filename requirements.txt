@@ -1,7 +1,10 @@
 qdrant-client
 fastembed
 gitpython
-PyGithub
+PyGithub~=2.5.0
 langchain-community
 generative-ai-hub-sdk[all]
 ai-core-sdk
+langgraph
+langchain~=0.3.10
+github~=1.2.7
