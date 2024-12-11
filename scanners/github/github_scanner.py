@@ -4,29 +4,31 @@ from git import Tag
 from github import Github, Auth, PaginatedList
 import git
 import re
-from FileChangeInfo import FileChangeInfo
+
+from scanners.github.FileChangeInfo import FileChangeInfo
+from scanners.github.github_settings import GitHubSettings
+
 
 ##TODO: check close the git client
 
 
 class GitHubScanner:
     ##TODO: The __init__ need to get the settings.py
-    def __init__(self, username: str, token: str, repo_name: str, base_url=None):
-        self.auth = Auth.Token(token)
-        if base_url:
+    def __init__(self, github_settings: GitHubSettings):
+        self.auth = Auth.Token(github_settings.token)
+        self.github_settings = github_settings
+        if github_settings.base_url:
             ##TODO: why its not work without the verify=False
-            self.github = Github(auth=self.auth, base_url=base_url, verify=False)
+            self.github = Github(auth=self.auth, base_url=github_settings.base_url, verify=False)
         else:
             self.github = Github(auth=self.auth)
 
-        self.repo_name = repo_name
         self.repo_metadata = self.get_repo_metadata()
-        self.username = username
 
     def get_repo_metadata(self):
         ##TODO: get_repo(name) not work checkout why
         for optional_rep in self.github.get_user().get_repos():
-            if self.repo_name == optional_rep.full_name:
+            if self.github_settings.repo_name == optional_rep.full_name:
                 return optional_rep
         raise Exception("The repo not exist")
 
@@ -36,7 +38,7 @@ class GitHubScanner:
 
     def clone_repo(self, branch="main", clone_path=None):
         """Clones the repository at a specific branch to repo_dir path."""
-        repo_dir = f"/tmp/{self.repo_name}"
+        repo_dir = f"/tmp/{self.github_settings.repo_name}"
         auth_url = self.get_repo_auth_url()
         if clone_path is not None:
             repo_dir = clone_path
@@ -128,12 +130,20 @@ class GitHubScanner:
         except Exception as e:
             raise RuntimeError(f"Error comparing tags {tag1.name} and {tag2.name}: {str(e)}")
 
+    def get_latest_tags_diff(self, branch="master"):
+        """
+        Gets the diff between the two most recent tags in the repository.
+        """
+        [tag1, tag2] = self.get_recent_two_tags()
+        return self.get_diff_between_tags(tag1, tag2, branch)
+
 if __name__ == '__main__':
     token = "<github_token>"
     repo_name = "devx-wing/ucl-provider"
     base_url = "https://github.wdf.sap.corp/api/v3"
     user_name = "<user_name>"
     main_repo_branch = "master"
+    github_settings = GitHubSettings(user_name, token, repo_name, base_url)
     scanner = GitHubScanner(user_name, token, repo_name, base_url)
     [tag1, tag2] = scanner.get_recent_two_tags()
     repo_path = scanner.get_diff_between_tags(tag1, tag2, main_repo_branch)

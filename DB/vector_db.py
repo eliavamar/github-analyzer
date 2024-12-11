@@ -14,7 +14,7 @@ class VectorDB:
         self.client = self._initialize_client()
 
     def _initialize_client(self):
-        if self.settings.db_type == DBType.QDRANT:
+        if self.settings.db_type.name == DBType.QDRANT.name:
             return self._initialize_qdrant_client()
         else:
             raise ValueError(f"Unsupported database type: {self.settings.db_type}")
@@ -22,14 +22,22 @@ class VectorDB:
     def _initialize_qdrant_client(self) -> QdrantClient:
         return QdrantClient(
             url=self.settings.url,
-            path=self.settings.path,
-            location=self.settings.location,
             api_key=self.settings.api_key
         )
 
     def get_client(self):
         """Returns the initialized vector database client."""
         return self.client
+
+    def add(self, collection_name, documents, metadata):
+        """Add documents with metadata to the collection."""
+
+        self.client.add(
+            collection_name=collection_name,
+            documents=documents,
+            metadata=metadata
+        )
+
 
 
 # Example usage
